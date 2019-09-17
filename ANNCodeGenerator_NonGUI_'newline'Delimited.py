@@ -6,30 +6,39 @@ import random
 #--Initialisations----------------------------------------------------------
 first_input = True
 
-fields = 'ANN Description Location (with filename)', 'ANN Class Name', 'Destination Folder', 'ANN Type', 'Shortened Code'
+fields = 'ANN Description Location (with filename)', 'ANN Class Name', 'ANN Network Name', 'Destination Folder', 'ANN Type', 'Shortened Code'
+
+NetworkParameters = 'loss_fn', 'optimizer', 
 
 inputfileloc = ''
 classname = ''
 destfolder = ''
 
-inputs = []
-inputs_sizes = []
-inputs_withsizes = []
-
-outputs = []
-outputs_sizes = []
-outputs_withsizes = []
+networkname = ''
 
 anntype = ''	# Keras or NN module
 
 shortenedcode = False 	# Whether to use loops in output ann code or put every layer as a separate line
 
-testbenchcode_format = ['^nng_imports^', 
-						'class ^nng_classname^(^nng_nnparam^):', 
-						'', 
-						'def __init__(self, ']
 
-format_values = [['^nng_imports^', ''], ['^nng_classname^', ''], ['^nng_nnparam^', '']]
+
+testbenchcode_format = ['^nng_imports^', 
+						'class ^nng_classname^(^nng_classparams^):', 
+							'', 
+							'def __init__(self ^nng_constructorparams^):', 
+								'^nng_imports^', 
+								'^nng_buildnetwork^', 
+							'', 
+							'def forward(self, X):', 
+								'return self.^nng_networkname^(X)', 
+							'', 
+							'def fit(self, x, y, opt, loss_fn, epochs, display_loss=True):', 
+								'^nng_imports^', 
+								''
+
+						]
+
+format_values = [['^nng_imports^', ''], ['^nng_classname^', ''], ['^nng_networkname^', ''], ['^nng_classparams^', '']]
 
 var_values = [['$var(n_inputs)$', ''], ['$var(n_inputs)$', ''], ['$var(n_inputs)$', '']]
 
@@ -53,32 +62,28 @@ def fetch_inputs(fields):
 	global inputfileloc
 	global classname
 	global destfolder
-	global timedelay
-	global clockdelay
-	global nooftestcases
-	global alltestcases
+	global networkname
+	global anntype
+	global shortenedcode
 
-	if input_dict["Verilog Code Location (with filename)"] != '':
-		inputfileloc = input_dict["Verilog Code Location (with filename)"]
-	if input_dict["Verilog Module Name"] != '':
-		classname = input_dict["Verilog Module Name"]
+	if input_dict["ANN Description Location (with filename)"] != '':
+		inputfileloc = input_dict["ANN Description Location (with filename)"]
+	if input_dict["ANN Class Name"] != '':
+		classname = input_dict["ANN Class Name"]
 	if input_dict["Destination Folder"] != '':
 		destfolder = input_dict["Destination Folder"]
-	if input_dict["Time Delay"] != '':
-		timedelay = int(input_dict["Time Delay"])
-	if input_dict["Clock Delay"] != '':
-		clockdelay = int(input_dict["Clock Delay"])
-	if input_dict["No of Test Cases"] != '':
-		nooftestcases = int(input_dict["No of Test Cases"])
-	elif input_dict["No of Test Cases"] == '':
-		alltestcases = True
+		if input_dict["ANN Network Name"] != '':
+		classname = input_dict["ANN Network Name"]
+	if input_dict["ANN Type"] != '':
+		anntype = input_dict["ANN Type"]
+	if input_dict["Shortened Code"] != '':
+		shortenedcode = input_dict["Shortened Code"]
 
 	InputOutputVerilogParser(filepath=inputfileloc, destfolder=destfolder)
 
 #--2--
 def FileContents(filepath):
-	f = open(filepath, "r")
-	return f.read()
+	return open(filepath, "r").read()
 
 def VectorSize(name):
 	name = name.strip()
@@ -129,17 +134,15 @@ def InputOutputVerilogParser(filepath, destfolder):
 
 	contents = FileContents(filepath)
 	contents = contents.split("\n")
-	# contents = contents.split(";")
-	# iterindex = 0
-	# for i in contents:
-	# 	contents[iterindex] = i + ";"
-	# 	iterindex+=1
+
 	print("\n\nCONTENTS: ", contents, "\n\n")
+
 	for line in contents:
 		print ("Line(wos): ", line)
 		line = line.strip()	
 		print ("Line(ws): ", line)
 
+		###################################### -- FORMAT REQUIRED TO CHECK -- ###########################################
 		if re.search('module\s+', line):
 			classname = re.findall('module\s+(.*)\(', line)[0].strip()
 
@@ -219,6 +222,8 @@ def InputOutputVerilogParser(filepath, destfolder):
 
 	for out in outputs_withsizes:
 		outputs.append(RemoveVectorArray(out))
+
+	###################################### -- FORMAT REQUIRED TO CHECK -- ###########################################
 
 	print ("Inputs with sizes: ", inputs_withsizes)
 	print ("Inputsize: ", inputs_sizes)
