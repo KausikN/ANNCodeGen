@@ -1,0 +1,8 @@
+StartNetworkDesc
+Linear <-><8>
+Sigmoid <>
+Linear <8><16>
+Sigmoid <>
+Linear <16><32>
+Softmax <>
+EndNetworkDesc

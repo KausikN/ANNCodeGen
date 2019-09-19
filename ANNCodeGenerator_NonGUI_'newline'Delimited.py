@@ -8,7 +8,7 @@ first_input = True
 
 fields = 'ANN Description Location (with filename)', 'ANN Class Name', 'ANN Network Name', 'Destination Folder', 'ANN Type', 'Shortened Code'
 
-NetworkParameters = 'loss_fn', 'optimizer', 
+NetworkParameters = 'loss_fn', 'optimizer'
 
 inputfileloc = ''
 classname = ''
@@ -20,27 +20,70 @@ anntype = ''	# Keras or NN module
 
 shortenedcode = False 	# Whether to use loops in output ann code or put every layer as a separate line
 
+network_desc = []
 
+n_inputs_name = 'n_inputs'
+n_outputs_name = 'n_outputs'
 
-testbenchcode_format = ['^nng_imports^', 
+constructor_params = [n_inputs_name, n_outputs_name]
+
+networkcode_format = ['^nng_imports^', 
 						'class ^nng_classname^(^nng_classparams^):', 
 							'', 
-							'def __init__(self ^nng_constructorparams^):', 
-								'^nng_imports^', 
+							'\tdef __init__(self ^nng_constructorparams^):', 
+								'\t\t^nng_constructorimports^', 
+								'\t\tsuper().__init__()', 
+								'\t\ttorch.manual_seed(0)', 
+								'\t\tseq = []', 
 								'^nng_buildnetwork^', 
+								'\t\tself.^nng_networkname^ = nn.Sequential(', 
+								'\t\tOrderedDict(seq)', 
+								'\t\t)', 
 							'', 
-							'def forward(self, X):', 
-								'return self.^nng_networkname^(X)', 
+							'\tdef forward(self, X):', 
+								'\t\treturn self.^nng_networkname^(X)', 
 							'', 
-							'def fit(self, x, y, opt, loss_fn, epochs, display_loss=True):', 
-								'^nng_imports^', 
-								''
-
+							'\tdef fit(self, x, y, opt, loss_fn, epochs, display_loss=True):', 
+								'\t\tfrom torch import optim', 
+								'\t\timport matplotlib.pyplot as plt', 
+								'\t\timport matplotlib.colors', 
+								'', 
+								'\t\tloss_arr = []', 
+								'\t\tfor epoch in range(epochs):', 
+									'\t\t\tloss = self.loss_fn(self.forward(x), y)', 
+									'\t\t\tloss_temp = loss.item()', 
+									'\t\t\tloss_arr.append(loss_temp)', 
+									'', 
+									'\t\t\tloss.backward()', 
+									'\t\t\topt.step()', 
+									'\t\t\topt.zero_grad()', 
+									'', 
+								'\t\tif display_loss:', 
+									'\t\t\tplt.plot(loss_arr)', 
+									'\t\t\tplt.xlabel(\'Epochs\')', 
+									'\t\t\tplt.ylabel(\'CE\')', 
+									'\t\t\tplt.show()', 
+									'', 
+								'\t\treturn loss.item()', 
+								'', 
+							'\tdef predict(self, X):', 
+								'\t\timport numpy as np', 
+								'\t\tY_pred = self.net(X)', 
+								'\t\tY_pred = Y_pred.detach().numpy()', 
+								'\t\treturn np.array(Y_pred).squeeze()'
 						]
 
-format_values = [['^nng_imports^', ''], ['^nng_classname^', ''], ['^nng_networkname^', ''], ['^nng_classparams^', '']]
+format_values = [['^nng_imports^', ''], ['^nng_constructorimports^', ''], ['^nng_classname^', ''], ['^nng_networkname^', ''], ['^nng_classparams^', ''], ['^nng_constructorparams^', ''], ['^nng_buildnetwork^', '']]
 
 var_values = [['$var(n_inputs)$', ''], ['$var(n_inputs)$', ''], ['$var(n_inputs)$', '']]
+
+keras_constructor_imports = [
+							"import keras", "from keras.models import Sequential", 
+							"from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D", 
+							"from keras.optimizers import SGD", 
+							"from keras.layers.advanced_activations import LeakyReLU"
+							]
+nn_constructor_imports = ["import torch", "import torch.nn as nn", "from collections import OrderedDict"]
 
 #---------------------------------------------------------------------------
 
@@ -72,166 +115,81 @@ def fetch_inputs(fields):
 		classname = input_dict["ANN Class Name"]
 	if input_dict["Destination Folder"] != '':
 		destfolder = input_dict["Destination Folder"]
-		if input_dict["ANN Network Name"] != '':
-		classname = input_dict["ANN Network Name"]
+	if input_dict["ANN Network Name"] != '':
+		networkname = input_dict["ANN Network Name"]
 	if input_dict["ANN Type"] != '':
 		anntype = input_dict["ANN Type"]
 	if input_dict["Shortened Code"] != '':
 		shortenedcode = input_dict["Shortened Code"]
 
-	InputOutputVerilogParser(filepath=inputfileloc, destfolder=destfolder)
+	NetworkDescParser(filepath=inputfileloc, destfolder=destfolder)
 
 #--2--
 def FileContents(filepath):
 	return open(filepath, "r").read()
 
-def VectorSize(name):
-	name = name.strip()
-
-	if re.search('^\[', name):
-		lval = re.findall('^\[(.*):', name)[0]
-		rval = re.findall('^\[.*:(.*)\]', name)[0]
-		return (abs(int(rval) - int(lval)) + 1)
-	return 1
-
-def ArraySize(name):
-	name = name.strip()
-
-	if re.search('^\[', name):
-		name = re.findall('^\[.*:.*\](.*)', name)[0]
-		return ArraySize(name)
-		# if re.search('\[', name):
-		# 	name = re.findall('^.+\[.*:.*\]', name)[0]
-		# 	return VectorSize(name)
-		# return 1
-
-	elif re.search('\[', name):
-		name = re.findall('^.+(\[.*:.*\])', name)[0]
-		return VectorSize(name)
-	return 1
-
-def RemoveVectorArray(name):
-	name = name.strip()
-
-	if re.search('^\[.*:.*\].*', name):
-		name = re.findall('^\[.*:.*\](.*)', name)[0]
-		return RemoveVectorArray(name)
-
-	elif re.search('\[', name):
-		name = re.findall('^(.+)(\[.*:.*\])', name)[0]
-		return name.strip()
-	return name.strip()
-
 #--3--
-def InputOutputVerilogParser(filepath, destfolder):
-	global inputs
-	global inputs_withsizes
-	global outputs
-	global outputs_withsizes
-	global inputs_sizes
-	global outputs_sizes
-	global classname
+def NetworkDescParser(filepath, destfolder):
+	global anntype
+
+	global network_desc
 
 	contents = FileContents(filepath)
 	contents = contents.split("\n")
 
 	print("\n\nCONTENTS: ", contents, "\n\n")
 
+	last_linear_layer_index = 0
+	network_index = 0
+
+	network_started = False
+
 	for line in contents:
 		print ("Line(wos): ", line)
 		line = line.strip()	
 		print ("Line(ws): ", line)
 
+		if re.search('StartNetworkDesc', line):
+			network_started = True
+			continue
+
+		if re.search('EndNetworkDesc', line):
+			network_started = False
+
 		###################################### -- FORMAT REQUIRED TO CHECK -- ###########################################
-		if re.search('module\s+', line):
-			classname = re.findall('module\s+(.*)\(', line)[0].strip()
+		# FORMAT -- Linear<2><3> - Order predefined   ^[^<>]
+		
 
-		if re.search('input\s+', line):
-			val = re.findall('input\s+(.*);', line)[0].strip()
-			if re.search('^\[', val) == None:
-				print ("Input: ", val, " -- ", val.split(","))
-				inps = val.split(",")
-				inpssize = []
-				i=0
-				for o in inps:
-					inps[i] = o.strip()
+		if network_started:			
+			print("params: ", re.findall('<([^<>]*)>', line))
+			print("name: ", re.findall('^([^<>]*)<', line))
+			params = re.findall('<([^<>]*)>', line)
+			network_desc.append([re.findall('^([^<>]*)<', line)[0].strip(), params])
 
-					inpssize.append([VectorSize(inps[i]), ArraySize(inps[i])])
+			if params[0] != '' and params[0] != ' ':
+				last_linear_layer_index = network_index
+			network_index += 1
 
-					i+=1
+		
 
-				inputs_withsizes.extend(inps)
-				inputs_sizes.extend(inpssize)
-			else:
-				vectorprefix = re.findall('^(\[.*:.*\]).*', val)[0]
-				val = re.findall('^\[.*:.*\](.*)', val)[0]
-
-				print ("Input: ", val, " -- ", val.split(","))
-				inps = val.split(",")
-				inpssize = []
-				i=0
-				for o in inps:
-					inps[i] = vectorprefix + o.strip()
-
-					inpssize.append([VectorSize(inps[i]), ArraySize(inps[i])])
-
-					i+=1
-
-				inputs_withsizes.extend(inps)
-				inputs_sizes.extend(inpssize)
-
-
-		if re.search('output\s+', line):
-			val = re.findall('output\s+(.*);', line)[0].strip()
-
-			if re.search('^\[', val) == None:
-				print ("Output: ", val, " -- ", val.split(","))
-				outs = val.split(",")
-				outssize = []
-				i=0
-				for o in outs:
-					outs[i] = o.strip()
-
-					outssize.append([VectorSize(outs[i]), ArraySize(outs[i])])
-
-					i+=1
-				
-				outputs_withsizes.extend(outs)
-				outputs_sizes.extend(outssize)
-
-			else:
-				vectorprefix = re.findall('^(\[.*:.*\]).*', val)[0]
-				val = re.findall('^\[.*:.*\](.*)', val)[0]
-
-				print ("Output: ", val, " -- ", val.split(","))
-				outs = val.split(",")
-				outssize = []
-				i=0
-				for o in outs:
-					outs[i] = vectorprefix + o.strip()
-
-					outssize.append([VectorSize(outs[i]), ArraySize(outs[i])])
-
-					i+=1
-				
-				outputs_withsizes.extend(outs)
-				outputs_sizes.extend(outssize)
-
-	for inp in inputs_withsizes:
-		inputs.append(RemoveVectorArray(inp))
-
-	for out in outputs_withsizes:
-		outputs.append(RemoveVectorArray(out))
 
 	###################################### -- FORMAT REQUIRED TO CHECK -- ###########################################
 
-	print ("Inputs with sizes: ", inputs_withsizes)
-	print ("Inputsize: ", inputs_sizes)
-	print ("Outputs with sizes: ", outputs_withsizes)
-	print ("Outputsize: ", outputs_sizes)
+	print(network_desc)
 
-	print("Inputs: ", inputs)
-	print("Outputs: ", outputs)
+	# First Layer must have n_inputs as input size
+	first_layer = network_desc[0]
+	first_layer_params = first_layer[1]
+	first_layer_params[0] = n_inputs_name
+	first_layer[1] = first_layer_params
+	network_desc[0] = first_layer
+
+	# Last Layer must have n_outputs as output size
+	last_layer = network_desc[last_linear_layer_index]
+	last_layer_params = last_layer[1]
+	last_layer_params[1] = n_outputs_name
+	last_layer[1] = last_layer_params
+	network_desc[last_linear_layer_index] = last_layer
 
 	AssignFormatValues()
 
@@ -239,213 +197,77 @@ def InputOutputVerilogParser(filepath, destfolder):
 
 #--4--
 def AssignFormatValues():
-	global format_values
-	global inputs
-	global inputs_withsizes
-	global outputs
-	global outputs_withsizes
-	global inputs_sizes
-	global outputs_sizes
+	global keras_constructor_imports
+	global anntype
+	global nn_constructor_imports
 	global classname
-	global timedelay
-	global clockdelay
-	global nooftestcases
-	global alltestcases
+	global networkname
+	global shortenedcode
+	global constructor_params
 
 	for f in format_values:
-		if f[0] == '^vtb_classname^':
+		if f[0] == '^nng_constructorimports^':
+			if anntype == 'keras':
+				for imp in keras_constructor_imports:
+					f[1] = f[1] + imp + "\n\t\t"
+			elif anntype == 'nn':
+				for imp in nn_constructor_imports:
+					f[1] = f[1] + imp + "\n\t\t"
 
-			f[1] = classname.strip()
-
-		if f[0] == '^vtb_inputs^':
-			s = ''
-			for i in inputs_withsizes:
-				s = s + 'reg'
-				s = s + ' '+ i
-				s = s + ';\n'
-
-			f[1] = s
-
-		if f[0] == '^vtb_outputs^':
-			s = ''
-			for i in outputs_withsizes:
-				s = s + 'wire'
-				s = s + ' '+ i
-				s = s + ';\n'
-
-			f[1] = s
-
-		if f[0] == '^vtb_inputsparams^':
-			s = ''
-			for i in inputs:
-				s = s + ', .'+ i + '(' + i + ')'
-
-			f[1] = re.findall('^, (.*)', s)[0]
-
-		if f[0] == '^vtb_outputsparams^':
-			s = ''
-			for i in outputs:
-				s = s + ', .'+ i + '(' + i + ')'
-
-			f[1] = re.findall('^, (.*)', s)[0]
-
-		if f[0] == '^vtb_monitor^':
-			s = '$monitor($time, ": '
-			for i in inputs:
-				s = s + ', ' + i + ': %b(%d)'		# 2 prints of inp and output needed
-			for i in outputs:
-				s = s + ', ' + i + ': %b(%d)'
-
-			s = s + '"'
-
-			for i in inputs:
-				s = s + ', ' + i 					# As there is %b and %d
-				s = s + ', ' + i
-			for i in outputs:
-				s = s + ', ' + i
-				s = s + ', ' + i
-			s = s + ');'
-
-			f[1] = s
-
-		if f[0] == '^vtb_inputinit^':
-			s = ''
-			i=0
-			for ip in inputs:
-				svec = inputs_sizes[i][0]
-				sarr = inputs_sizes[i][1]
-				if sarr > 1:
-					for j in range(sarr):
-						s = s + ip + '[' + str(j) + '] = ' + str(svec) + "'b"
-						for k in range(svec):
-							s = s + '0'
-						s = s + '; '
-					s = s + '\n'
-				else:
-					s = s + ip + ' = ' + str(svec) + "'b"
-					for k in range(svec):
-						s = s + '0'
-					s = s + '; '
-					s = s + '\n'
-
-			f[1] = s
-
-		if f[0] == '^vtb_inputchange^':
-			if alltestcases:
-				f[1] = AllTestCases(timedelay, inputs, inputs_sizes)
+		if f[0] == '^nng_classname^':
+			if classname != '':
+				f[1] = classname
 			else:
-				f[1] = LimitedTestCases(nooftestcases, timedelay, inputs, inputs_sizes)
+				 f[1] = "NeuralNetwork"
 
-		if f[0] == '^vtb_clockdelay^':
-
-			f[1] = str(clockdelay)
-
-		if f[0] == '^vtb_clkname^':
-			clkname = ''
-			for i in clock_inp_names:
-				if i in inputs:
-					clkname = i
-			if clkname != '':
-				f[1] = 'always #' + str(clockdelay)  + '\n\t' + clkname + ' = ! ' + clkname + ';'
+		if f[0] == '^nng_networkname^':
+			if networkname != '':
+				f[1] = networkname
 			else:
-				f[1] = ''
+				 f[1] = "net"
 
+		if f[0] == '^nng_classparams^':
+			if anntype == 'nn':
+				f[1] = 'nn.Module'
+
+		if f[0] == '^nng_buildnetwork^':
+			if shortenedcode in ['Y', 'Yes', 'yes', 'y', '1']:
+				f[1] = BuildNetworkCode(True)
+			else:
+				f[1] = BuildNetworkCode(False)
+
+		if f[0] == '^nng_constructorparams^':
+			for p in constructor_params:
+				f[1] = f[1] + ', ' + p
 
 	print("FORMAT: ", format_values)
 
 #--5--
-def LimitedTestCases(nooftestcases, timedelay, inputs, inputs_sizes):
-	s = ''
-	for i in range(nooftestcases):
-		s = s + '#' + str(timedelay) + ' '
-		random.randint(1,2)
-		i=0
-		for ip in inputs:
-			svec = inputs_sizes[i][0]
-			sarr = inputs_sizes[i][1]
-			if sarr > 1:
-				for j in range(sarr):
-					s = s + ip + '[' + str(j) + '] = ' + str(svec) + "'b"
-					for k in range(svec):
-						s = s + str(random.randint(0,1))
-					s = s + '; '
-				#s = s + '\n'
-			else:
-				s = s + ip + ' = ' + str(svec) + "'b"
-				for k in range(svec):
-					s = s + str(random.randint(0,1))
-				s = s + '; '
-				#s = s + '\n'
-		s = s + '\n'
-	return s
+def BuildNetworkCode(shortenedcode, tabspace='\t\t'):
+	global network_desc
+	global anntype
 
-def AllTestCases(timedelay, inputs, inputs_sizes):
-	s = ''
-	total_size = 0
-	for ip in inputs_sizes:
-		total_size = total_size + (ip[0]*ip[1])
+	network_text = ''
+	if anntype == 'nn':
+		if not shortenedcode:
+			for layer in network_desc:
+				params = ''
+				for param in layer[1]:
+					params += ', ' + param.strip()
+				params = params[params.find(',')+1:]
 
-	noofcombinations = 2 ** total_size
-
-	totinp = [0]*total_size
-
-	print("\n")
-
-	for i in range(noofcombinations):
-
-		print("TestCase: ", i, "/", noofcombinations)
-
-		s = s + '#' + str(timedelay) + ' '
-		totinp = GenNextInput(totinp)
-
-		totinpindex = 0
-		index=0
-		for ip in inputs:
-			svec = inputs_sizes[index][0]
-			sarr = inputs_sizes[index][1]
-			if sarr > 1:
-				for j in range(sarr):
-					s = s + ip + '[' + str(j) + '] = ' + str(svec) + "'b"
-					for k in range(svec):
-						s = s + str(totinp[totinpindex])
-						totinpindex+=1
-					s = s + '; '
-				#s = s + '\n'
-			else:
-				s = s + ip + ' = ' + str(svec) + "'b"
-				for k in range(svec):
-					s = s + str(totinp[totinpindex])
-					totinpindex+=1
-				s = s + '; '
-				#s = s + '\n'
-
-		s = s + '\n'
-
-	return s
-
-def GenNextInput(totinp):
-	newtotinp = totinp
-	i = 0
-	for t in totinp:
-		if t == 1:
-			newtotinp[i] = 0
-		elif t == 0:
-			newtotinp[i] = 1
-			break
-		i+=1
-	return newtotinp
-
-
+				network_text += tabspace + 'nn.' + layer[0].strip() + '(' + params.strip() + ')' + '\n'
+			return network_text
 
 #--6--
 def CreateOutputFile():
-	global testbenchcode_format
+	global networkcode_format
 	global format_values
 
 	global destfolder
 
 	contents = ''
-	for c in testbenchcode_format:
+	for c in networkcode_format:
 
 		for fv in format_values:
 			c = c.replace(fv[0], fv[1])
@@ -453,7 +275,7 @@ def CreateOutputFile():
 		contents = contents + '\n'
 	print("OutputFileContents: ", contents)
 
-	f = open(destfolder + '\\' + classname + '_tb.v', 'w+')
+	f = open(destfolder + '\\' + classname + '_Code.py', 'w+')
 	f.write(contents)
 
 
@@ -462,3 +284,9 @@ def CreateOutputFile():
 #--Main Code----------------------------------------------------------------
 
 fetch_inputs(fields)
+
+
+
+Linear_params = ['n_inputs', 'n_outputs']
+Sigmoid_params = []
+Softmax_params = []
