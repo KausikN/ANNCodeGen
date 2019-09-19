@@ -1,5 +1,5 @@
 
-class BasicNeuralNetwork(nn.Module):
+class BasicNN(nn.Module):
 
 	def __init__(self , n_inputs, n_outputs):
 		import torch
@@ -8,20 +8,18 @@ class BasicNeuralNetwork(nn.Module):
 		
 		super().__init__()
 		torch.manual_seed(0)
-		seq = []
-		nn.Linear(n_inputs, 8)
-		nn.Sigmoid()
-		nn.Linear(8, 16)
-		nn.Sigmoid()
-		nn.Linear(16, n_outputs)
-		nn.Softmax()
 
-		self.net2 = nn.Sequential(
-		OrderedDict(seq)
+		self.net = nn.Sequential(
+		nn.Linear(n_inputs, 8), 
+		nn.Sigmoid(), 
+		nn.Linear(8, 16), 
+		nn.Sigmoid(), 
+		nn.Linear(16, n_outputs), 
+		nn.Softmax()  
 		)
 
 	def forward(self, X):
-		return self.net2(X)
+		return self.net(X)
 
 	def fit(self, x, y, opt, loss_fn, epochs, display_loss=True):
 		from torch import optim

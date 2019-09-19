@@ -34,9 +34,10 @@ networkcode_format = ['^nng_imports^',
 								'\t\t^nng_constructorimports^', 
 								'\t\tsuper().__init__()', 
 								'\t\ttorch.manual_seed(0)', 
-								'', 
-								'\t\tself.^nng_networkname^ = nn.Sequential(', 
+								'\t\tseq = []', 
 								'^nng_buildnetwork^', 
+								'\t\tself.^nng_networkname^ = nn.Sequential(', 
+								'\t\tOrderedDict(seq)', 
 								'\t\t)', 
 							'', 
 							'\tdef forward(self, X):', 
@@ -255,8 +256,7 @@ def BuildNetworkCode(shortenedcode, tabspace='\t\t'):
 					params += ', ' + param.strip()
 				params = params[params.find(',')+1:]
 
-				network_text += tabspace + 'nn.' + layer[0].strip() + '(' + params.strip() + '), ' + '\n'
-			network_text = network_text[:network_text.rfind(',')] + ' ' + network_text[network_text.rfind(',')+1]
+				network_text += tabspace + 'nn.' + layer[0].strip() + '(' + params.strip() + ')' + '\n'
 			return network_text
 
 #--6--
