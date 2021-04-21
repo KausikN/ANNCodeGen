@@ -1,4 +1,4 @@
-# ANNCodeGen-Project
+# ANNCodeGen
  An adaptive ANN (CNN or FNN) code generator using python
  
  - Generates a standard Neural Network Class in Python
