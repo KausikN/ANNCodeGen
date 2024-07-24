@@ -1,0 +1,10 @@
+{
+    "PROJECT_NAME": "ANNCodeGen",
+    "PROJECT_LINK": "https://github.com/KausikN/ANNCodeGen",
+
+    "PROJECT_DESC": "An adaptive ANN (CNN or FNN) code generator using python",
+
+    "PROJECT_README": "README.md",
+
+    "PROJECT_MODES": ["Generate ANN Code"]
+}

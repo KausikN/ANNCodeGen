@@ -1,0 +1,195 @@
+{
+    "name": "ANNCodeGen",
+    "repo_link": "https://github.com/KausikN/ANNCodeGen",
+    "local_path": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+    "modules": {
+        "*.py": {
+            "name": "*",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "ANNCodeGen.py": {
+            "name": "ANNCodeGen",
+            "type": "local",
+            "link": "https://github.com/KausikN/ANNCodeGen/blob/master/ANNCodeGen.py",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "",
+            "dependencies": [
+                "random.py",
+                "re.py"
+            ]
+        },
+        "Conv2D.py": {
+            "name": "Conv2D",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "Data/Examples/BasicNN_Code.py": {
+            "name": "BasicNN_Code",
+            "type": "local",
+            "link": "https://github.com/KausikN/ANNCodeGen/blob/master/Data/Examples/BasicNN_Code.py",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "Data/Examples",
+            "dependencies": []
+        },
+        "Data/Examples/CNN_Keras_ExampleCode.py": {
+            "name": "CNN_Keras_ExampleCode",
+            "type": "local",
+            "link": "https://github.com/KausikN/ANNCodeGen/blob/master/Data/Examples/CNN_Keras_ExampleCode.py",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "Data/Examples",
+            "dependencies": [
+                "Conv2D.py",
+                "Dense.py",
+                "Dropout.py",
+                "Flatten.py",
+                "LeakyReLU.py",
+                "MaxPooling2D.py",
+                "SGD.py",
+                "Sequential.py",
+                "keras.py"
+            ]
+        },
+        "Data/Examples/FNN_nn_ExampleCode.py": {
+            "name": "FNN_nn_ExampleCode",
+            "type": "local",
+            "link": "https://github.com/KausikN/ANNCodeGen/blob/master/Data/Examples/FNN_nn_ExampleCode.py",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "Data/Examples",
+            "dependencies": [
+                "torch/nn.py"
+            ]
+        },
+        "Dense.py": {
+            "name": "Dense",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "Dropout.py": {
+            "name": "Dropout",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "Flatten.py": {
+            "name": "Flatten",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "LeakyReLU.py": {
+            "name": "LeakyReLU",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "MaxPooling2D.py": {
+            "name": "MaxPooling2D",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "SGD.py": {
+            "name": "SGD",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "Sequential.py": {
+            "name": "Sequential",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "app.py": {
+            "name": "app",
+            "type": "local",
+            "link": "https://github.com/KausikN/ANNCodeGen/blob/master/app.py",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "",
+            "dependencies": [
+                "*.py",
+                "json.py",
+                "os.py",
+                "streamlit.py"
+            ]
+        },
+        "json.py": {
+            "name": "json",
+            "type": "inbuilt",
+            "link": "",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "keras.py": {
+            "name": "keras",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "os.py": {
+            "name": "os",
+            "type": "inbuilt",
+            "link": "",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "random.py": {
+            "name": "random",
+            "type": "inbuilt",
+            "link": "",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "re.py": {
+            "name": "re",
+            "type": "inbuilt",
+            "link": "",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "streamlit.py": {
+            "name": "streamlit",
+            "type": "inbuilt",
+            "link": "",
+            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "sub_dir": "",
+            "dependencies": []
+        },
+        "torch/nn.py": {
+            "name": "nn",
+            "type": "missing",
+            "link": "",
+            "parent_dir": "",
+            "sub_dir": "torch",
+            "dependencies": []
+        }
+    }
+}

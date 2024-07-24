@@ -1,0 +1,11 @@
+{
+    "files_to_download": [
+        "StreamLitGUI/",
+        "app.py",
+        "ANNCodeGen.py",
+        "Data/Examples/"
+    ],
+    "streamlit": {
+        "link": "https://kausikn-anncodegen.streamlit.app/"
+    }
+}
