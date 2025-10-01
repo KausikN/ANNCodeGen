@@ -1,7 +1,6 @@
 {
     "repo_name": "ANNCodeGen",
     "requirements": [
-        "streamlit",
-        "opencv-python-headless"
+        "streamlit"
     ]
 }

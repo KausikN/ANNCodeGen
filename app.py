@@ -3,11 +3,10 @@ Stream lit GUI for hosting ANNCodeGen
 """
 
 # Imports
-import os
 import json
 import streamlit as st
 
-from ANNCodeGen import *
+import ANNCodeGen
 
 # Main Vars
 config = json.load(open("./StreamLitGUI/UIConfig.json", "r"))
@@ -76,7 +75,7 @@ def UI_GetInputs():
 
     USERINPUT_InputCode = st.text_area(
         "Input Code", 
-        value=DEFAULT_CODE, 
+        value=ANNCodeGen.DEFAULT_CODE, 
         height=300
     )
     USERINPUT_ClassName = st.text_input("Class Name")
@@ -105,13 +104,13 @@ def generate_ann_code():
     st.header("Generate ANN Code")
 
     # Prereq Loaders
-    ResetStateVars()
+    ANNCodeGen.ResetStateVars()
 
     # Load Inputs
     USERINPUTS_Inputs = UI_GetInputs()
 
     # Process Inputs
-    ANNCode = NetworkDescParser(
+    ANNCode = ANNCodeGen.NetworkDescParser(
         code=USERINPUTS_Inputs["code"], 
         save=False, 
         param_classname=USERINPUTS_Inputs["classname"], 

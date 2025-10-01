@@ -33,6 +33,9 @@ nn_constructor_imports = None
 
 # Main Functions
 def ResetStateVars():
+    '''
+    Reset State Vars
+    '''
     global network_desc
     global n_inputs_name
     global n_outputs_name
@@ -115,6 +118,9 @@ def ResetStateVars():
     nn_constructor_imports = ["import torch", "import torch.nn as nn", "from collections import OrderedDict"]
 
 def fetch_inputs(fields):
+    '''
+    Fetch Inputs
+    '''
     global first_input
     global inputfileloc
     global classname
@@ -148,6 +154,9 @@ def fetch_inputs(fields):
     NetworkDescParser(filepath=inputfileloc)
 
 def FileContents(filepath):
+    '''
+    File Contents
+    '''
     return open(filepath, "r").read()
 
 def NetworkDescParser(
@@ -155,6 +164,9 @@ def NetworkDescParser(
         save=True, 
         param_classname=None, param_networkname=None, param_anntype=None, param_shortenedcode=None
 ):
+    '''
+    Network Desc Parser
+    '''
     global classname
     global networkname
     global anntype
@@ -220,6 +232,9 @@ def NetworkDescParser(
     return CreateOutputFile(save=save)
 
 def AssignFormatValues():
+    '''
+    Assign Format Values
+    '''
     global keras_constructor_imports
     global anntype
     global nn_constructor_imports
@@ -266,6 +281,9 @@ def AssignFormatValues():
     if VERBOSE: print("\n\n ### FORMAT: ", format_values, "\n\n")
 
 def BuildNetworkCode(shortenedcode, tabspace="\t\t"):
+    '''
+    Build Network Code
+    '''
     global network_desc
     global anntype
 
@@ -282,6 +300,9 @@ def BuildNetworkCode(shortenedcode, tabspace="\t\t"):
     return network_text
 
 def CreateOutputFile(save=True):
+    '''
+    Create Output File
+    '''
     global networkcode_format
     global format_values
     global destfolder

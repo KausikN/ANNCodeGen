@@ -1,21 +1,13 @@
 {
     "name": "ANNCodeGen",
     "repo_link": "https://github.com/KausikN/ANNCodeGen",
-    "local_path": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+    "local_path": "D:/Github Codes and Projects/Projects/ANNCodeGen",
     "modules": {
-        "*.py": {
-            "name": "*",
-            "type": "missing",
-            "link": "",
-            "parent_dir": "",
-            "sub_dir": "",
-            "dependencies": []
-        },
         "ANNCodeGen.py": {
             "name": "ANNCodeGen",
             "type": "local",
             "link": "https://github.com/KausikN/ANNCodeGen/blob/master/ANNCodeGen.py",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "",
             "dependencies": [
                 "random.py",
@@ -34,7 +26,7 @@
             "name": "BasicNN_Code",
             "type": "local",
             "link": "https://github.com/KausikN/ANNCodeGen/blob/master/Data/Examples/BasicNN_Code.py",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "Data/Examples",
             "dependencies": []
         },
@@ -42,7 +34,7 @@
             "name": "CNN_Keras_ExampleCode",
             "type": "local",
             "link": "https://github.com/KausikN/ANNCodeGen/blob/master/Data/Examples/CNN_Keras_ExampleCode.py",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "Data/Examples",
             "dependencies": [
                 "Conv2D.py",
@@ -60,7 +52,7 @@
             "name": "FNN_nn_ExampleCode",
             "type": "local",
             "link": "https://github.com/KausikN/ANNCodeGen/blob/master/Data/Examples/FNN_nn_ExampleCode.py",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "Data/Examples",
             "dependencies": [
                 "torch/nn.py"
@@ -126,12 +118,11 @@
             "name": "app",
             "type": "local",
             "link": "https://github.com/KausikN/ANNCodeGen/blob/master/app.py",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "",
             "dependencies": [
-                "*.py",
+                "ANNCodeGen.py",
                 "json.py",
-                "os.py",
                 "streamlit.py"
             ]
         },
@@ -139,7 +130,7 @@
             "name": "json",
             "type": "inbuilt",
             "link": "",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "",
             "dependencies": []
         },
@@ -151,19 +142,11 @@
             "sub_dir": "",
             "dependencies": []
         },
-        "os.py": {
-            "name": "os",
-            "type": "inbuilt",
-            "link": "",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
-            "sub_dir": "",
-            "dependencies": []
-        },
         "random.py": {
             "name": "random",
             "type": "inbuilt",
             "link": "",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "",
             "dependencies": []
         },
@@ -171,7 +154,7 @@
             "name": "re",
             "type": "inbuilt",
             "link": "",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "",
             "dependencies": []
         },
@@ -179,7 +162,7 @@
             "name": "streamlit",
             "type": "inbuilt",
             "link": "",
-            "parent_dir": "E:/Github Codes and Projects/Projects/ANNCodeGen",
+            "parent_dir": "D:/Github Codes and Projects/Projects/ANNCodeGen",
             "sub_dir": "",
             "dependencies": []
         },
